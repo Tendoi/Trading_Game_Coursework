@@ -123,7 +123,7 @@ void cGame::initialise(SDL_Window* theSDLWND, SDL_Renderer* theRenderer)
 	}
 	// Create text Textures
 	gameTextNames = { "TitleTxt", "CreateTxt", "DragDropTxt", "ThanksTxt", "SeeYouTxt", "Score"};
-	gameTextList = { "Travelling Merchant", "Trade goods between cities.", "Arrow Keys to move and Space to gain Score.", "Congratulations for retiring!", "May we meet again!", "Profit: "};
+	gameTextList = { "Travelling Merchant", "Trade goods between cities.", "Arrow Keys to move and Space to buy/sell goods.", "Congratulations for retiring!", "May we meet again!", "Profit: "};
 	for (int text = 0; text < gameTextNames.size(); text++)
 	{
 		theTextureMgr->addTexture(gameTextNames[text], theFontMgr->getFont("OpenSans")->createTextTexture(theRenderer, gameTextList[text], SOLID, { 0, 0, 0, 255 }, { 0, 0, 0, 0 }));
@@ -328,14 +328,6 @@ void cGame::update(double deltaTime)
 		//theTileMap.writeMapDataToFile(&theFile);
 		theCart.setBoundingRect(theCart.getSpritePos());
 		// trying to get collision to work.
-		if (theCart.collidedWith(&(spriteBuy.getBoundingRect()), &(theCart.getBoundingRect())))
-		{
-			if (theButtonMgr->getBtn("buy_btn")->getClicked())
-			{
-				theSoundMgr->getSnd("click")->play(0);
-				gotWheat = true;
-			}
-		}
 	}
 	break;
 		case END:
@@ -408,7 +400,7 @@ bool cGame::getInput(bool theLoop)
 				dragTile.setSpritePos({ event.motion.x, event.motion.y });
 			}
 			break;
-			// movement for the cart.
+			// Cart Controls
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym)
 				{
@@ -478,7 +470,7 @@ bool cGame::getInput(bool theLoop)
 					}
 					else
 					{
-						if (theCart.collidedWith(&(spriteSell.getBoundingRect()), &(theCart.getBoundingRect())) && gotWheat==true)
+						if (theCart.collidedWith(&(spriteSell.getBoundingRect()), &(theCart.getBoundingRect())) && gotWheat == true)
 						{
 							gotWheat == false;
 							theSoundMgr->getSnd("retire")->play(0);
@@ -486,14 +478,6 @@ bool cGame::getInput(bool theLoop)
 							strScore = gameTextList[5] + to_string(score);
 							theTextureMgr->deleteTexture("Score");
 						}
-						else
-						{
-							score += 10;
-							strScore = gameTextList[5] + to_string(score);
-							theTextureMgr->deleteTexture("Score");
-							theSoundMgr->getSnd("profit")->play(0);
-						}
-						
 					}
 				}
 				break;
